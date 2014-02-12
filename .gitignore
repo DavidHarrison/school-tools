@@ -1,0 +1,4 @@
+# files for compiling
+*.hi
+*.o
+Plotter
