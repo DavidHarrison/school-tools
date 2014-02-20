@@ -4,22 +4,52 @@
  - (mostly used for Chemistry)
  -}
 import Text.CSV (CSV, Record, parseCSVFromFile)
-import Graphics.EasyPlot
+import Graphics.EasyPlot (plot, Graph2D(..), Option(Title, Style, Color),
+                          Style(Points, Lines), TerminalType(..),
+                          Color(Black), Option2D(Range))
 import Data.Char (isNumber)
 import Data.Either.Utils (fromRight)
+import Data.Maybe (fromMaybe, fromJust)
 import Statistics.LinearRegression (linearRegression)
 import Data.Vector.Unboxed (fromList)
-import Data.List (transpose)
+import Data.List (transpose, stripPrefix)
 import System.Environment (getArgs)
+import Control.Applicative ((<$>))
+import System.Exit (exitFailure)
 
 main :: IO Bool
-main = getArgs >>= return . head >>= fromFile
+main = getArgs
+       >>= return . fromJust . procArgs
+       >>= fromFile
 
-fromFile :: FilePath -> IO Bool
-fromFile f = getCSV (f ++ ".csv")
-             >>= return . (map adjust) . points
-             >>= return . makeGraphs
-             >>= plotGraph (f ++ ".png")
+procArgs :: [String] -> Maybe (FilePath,TerminalType)
+procArgs (fi:tt:fo:[]) = Just (fi, terminalType tt $ Just fo)
+procArgs (fi:tt:[]) = Just (fi,terminalType tt Nothing)
+procArgs _ = Nothing
+
+terminalType :: String -> Maybe FilePath -> TerminalType
+terminalType "X11" Nothing = X11
+terminalType "JPEG" (Just f) = JPEG f
+terminalType "Latex" (Just f) = Latex f
+
+usage :: String
+usage = "plot <infile.csv> <TerminalType (X11, JPEG, Latex etc)> [<outfile>]"
+
+getFileName :: String -> FilePath
+getFileName s = fromMaybe s (stripExt s)
+
+stripExt :: FilePath -> Maybe FilePath
+stripExt f
+  | length stripped == 0 = Nothing
+  | otherwise = Just $ init stripped
+    where stripped = reverse $ dropWhile (/= '.') $ reverse f
+
+
+fromFile :: (FilePath, TerminalType) -> IO Bool
+fromFile (f,tt) = getCSV f
+                  >>= return . (map adjust) . points
+                  >>= return . makeGraphs
+                  >>= plot tt
 
 adjust :: (Double,Double) -> (Double,Double)
 adjust (x,y) = (x,y)
@@ -28,13 +58,6 @@ makeGraphs :: [(Double,Double)] -> [Graph2D Double Double]
 makeGraphs ps = [points_plot, best_fit_line]
   where points_plot = Data2D [Title "", Style Points] [] ps
         best_fit_line = functionPlot ps
-
-plotGraph :: FilePath -> [Graph2D Double Double] -> IO Bool
-plotGraph f gs = plotType gs
-  where
-    -- plotType = plot (Latex f)
-    -- plotType = plot (PNG f)
-    plotType = plot X11
 
 functionPlot :: [(Double,Double)] -> Graph2D Double Double
 functionPlot ps = Function2D

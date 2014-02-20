@@ -2,3 +2,5 @@
 *.hi
 *.o
 Plotter
+#temp dat files
+*.dat
