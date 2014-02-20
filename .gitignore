@@ -4,3 +4,5 @@
 Plotter
 #temp dat files
 *.dat
+#swap files
+.*.swp
