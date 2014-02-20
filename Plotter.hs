@@ -12,10 +12,9 @@ import Data.Either.Utils (fromRight)
 import Data.Maybe (fromMaybe, fromJust)
 import Statistics.LinearRegression (linearRegression)
 import Data.Vector.Unboxed (fromList)
-import Data.List (transpose, stripPrefix)
+import Data.List (transpose)
 import System.Environment (getArgs)
-import Control.Applicative ((<$>))
-import System.Exit (exitFailure)
+import Text.Printf (printf)
 
 main :: IO Bool
 main = getArgs
@@ -73,7 +72,7 @@ functionPlot ps = Function2D
                     [Range (minimum xs) (maximum xs)]
                     lineFunction
   where
-    title = (show beta) ++ "x + " ++ (show alpha)
+    title = (printf "%.3f" beta) ++ "x + " ++ (printf "%.3f" alpha)
     lineFunction = (\x -> alpha + beta * x)
     (alpha,beta) = linearRegression (fromList xs) (fromList ys)
     (xs,ys) = unzip ps
