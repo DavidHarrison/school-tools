@@ -23,22 +23,22 @@ main = getArgs
        >>= fromFile
 
 procArgs :: [String] -> Maybe (FilePath,TerminalType)
-procArgs (fi:tt:fo:[]) = Just (fi, terminalType tt $ Just fo)
-procArgs (fi:tt:[]) = Just (fi,terminalType tt Nothing)
+procArgs (fi:tt:fo:[]) = Just (fi, terminalType tt fo)
+procArgs (fi:tt:[]) = Just (fi,terminalType tt "")
 procArgs _ = Nothing
 
-terminalType :: String -> Maybe FilePath -> TerminalType
-terminalType "Aqua" _         = Aqua
-terminalType "Windows" _      = Windows
-terminalType "X11" _          = X11
-terminalType "PS" (Just f)    = PS f
-terminalType "EPS" (Just f)   = EPS f
-terminalType "PNG" (Just f)   = PNG f
-terminalType "PDF" (Just f)   = PDF f
-terminalType "SVG" (Just f)   = SVG f
-terminalType "GIF" (Just f)   = GIF f
-terminalType "JPEG" (Just f)  = JPEG f
-terminalType "Latex" (Just f) = Latex f
+terminalType :: String -> FilePath -> TerminalType
+terminalType "Aqua"    _ = Aqua
+terminalType "Windows" _ = Windows
+terminalType "X11"     _ = X11
+terminalType "PS"      f = PS    f
+terminalType "EPS"     f = EPS   f
+terminalType "PNG"     f = PNG   f
+terminalType "PDF"     f = PDF   f
+terminalType "SVG"     f = SVG   f
+terminalType "GIF"     f = GIF   f
+terminalType "JPEG"    f = JPEG  f
+terminalType "Latex"   f = Latex f
 
 usage :: String
 usage = "plot <infile.csv> <TerminalType (X11, JPEG, Latex etc)> [<outfile>]"
