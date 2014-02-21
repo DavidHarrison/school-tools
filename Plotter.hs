@@ -72,10 +72,15 @@ functionPlot ps = Function2D
                     [Range (minimum xs) (maximum xs)]
                     lineFunction
   where
-    title = (printf "%.3f" beta) ++ "x + " ++ (printf "%.3f" alpha)
+    title = (printf "%.3f" beta) ++ "x " ++ (sgString alpha) ++ " " ++ (printf "%.3f" $ abs alpha)
     lineFunction = (\x -> alpha + beta * x)
     (alpha,beta) = linearRegression (fromList xs) (fromList ys)
     (xs,ys) = unzip ps
+
+sgString :: (Ord a, Num a) => a -> String
+sgString a
+  | a < 0 = "-"
+  | otherwise = "+"
 
 getCSV :: FilePath -> IO CSV
 getCSV f = parseCSVFromFile f >>= return . fromRight
