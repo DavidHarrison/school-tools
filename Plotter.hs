@@ -3,18 +3,20 @@
  - tool to plot (x,y) data points from CSV file with a best-fit line
  - (mostly used for Chemistry)
  -}
-import Text.CSV (CSV, Record, parseCSVFromFile)
-import Graphics.EasyPlot (plot, Graph2D(..), Option(Title, Style, Color),
-                          Style(Points, Lines), TerminalType(..),
-                          Color(Black), Option2D(Range))
-import Data.Char (isNumber)
-import Data.Either.Utils (fromRight)
-import Data.Maybe (fromMaybe, fromJust)
+import Data.Char                   (isNumber)
+import Data.Either.Utils           (fromRight)
+import Data.List                   (transpose)
+import Data.Maybe                  (fromMaybe, fromJust)
+import Data.Vector.Unboxed         (fromList)
+import Graphics.EasyPlot           ( plot, Graph2D(..)
+                                   , Option(Title, Style, Color)
+                                   , Style(Points, Lines), TerminalType(..)
+                                   , Color(Black), Option2D(Range)
+                                   )
 import Statistics.LinearRegression (linearRegression)
-import Data.Vector.Unboxed (fromList)
-import Data.List (transpose)
-import System.Environment (getArgs)
-import Text.Printf (printf)
+import System.Environment          (getArgs)
+import Text.CSV                    (CSV, Record, parseCSVFromFile)
+import Text.Printf                 (printf)
 
 main :: IO Bool
 main = getArgs
@@ -23,8 +25,8 @@ main = getArgs
 
 procArgs :: [String] -> Maybe (FilePath,TerminalType)
 procArgs (fi:tt:fo:[]) = Just (fi, terminalType tt fo)
-procArgs (fi:tt:[]) = Just (fi,terminalType tt "")
-procArgs _ = Nothing
+procArgs (fi:tt:[])    = Just (fi,terminalType tt "")
+procArgs _             = Nothing
 
 terminalType :: String -> FilePath -> TerminalType
 terminalType "Aqua"    _ = Aqua
@@ -62,7 +64,8 @@ adjust :: (Double,Double) -> (Double,Double)
 adjust (x,y) = (x,y)
 
 makeGraphs :: [(Double,Double)] -> [Graph2D Double Double]
-makeGraphs ps = [points_plot, best_fit_line]
+-- makeGraphs ps = [points_plot, best_fit_line]
+makeGraphs ps = [points_plot]
   where points_plot = Data2D [Title "", Style Points] [] ps
         best_fit_line = functionPlot ps
 

@@ -2,6 +2,8 @@
 *.hi
 *.o
 Plotter
+qmbl2csv
+adjust
 #temp dat files
 *.dat
 #swap files

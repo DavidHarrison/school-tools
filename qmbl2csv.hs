@@ -15,7 +15,7 @@ type QMBL = [Content]
 main :: IO ()
 main = inFile >>= readFile
        >>= return . filter (\c -> (c /= '\"')) . printCSV . qmblToCSV . parseXML
-       >>= (\s -> (outFile >>= (\f -> writeFile f s)))
+       >>= (\s -> outFile >>= (\f -> writeFile f s))
   where inFile  = head <$> getArgs
         outFile = last <$> getArgs
 
